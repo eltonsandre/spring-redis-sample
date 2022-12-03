@@ -1,0 +1,42 @@
+{
+  "groups": [
+    {
+      "name": "cache-config",
+      "type": "dev.eltonsandre.sample.infra.cache.configuration.CacheConfigProperties",
+      "description": "Configurações do cache da aplicação",
+      "sourceType": "dev.eltonsandre.sample.infra.cache.configuration.CacheConfigProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "cache-config",
+      "type": "dev.eltonsandre.sample.infra.cache.configuration.CacheConfigProperties",
+      "description": "Configurações do cache da aplicação",
+      "sourceType": "dev.eltonsandre.sample.infra.cache.configuration.CacheConfigProperties"
+    },
+    {
+      "name": "cache-config.caches",
+      "type": "java.util.Map<java.lang.String,dev.eltonsandre.sample.infra.cache.configuration.CacheConfigProperties.Config>",
+      "description": "Configurações de cache por nome",
+      "sourceType": "dev.eltonsandre.sample.infra.cache.configuration.CacheConfigProperties",
+      "defaultValue": {
+        "timeToLive": "1m",
+        "disabled": false
+      }
+    },
+    {
+      "name": "cache-config.caches.cache-name.timeToLive",
+      "type": "java.time.Duration",
+      "description": "TTL do cache por nome",
+      "sourceType": "dev.eltonsandre.sample.infra.cache.configuration.CacheConfigProperties.Config",
+      "defaultValue": "1m"
+    },
+    {
+      "name": "cache-config.caches.cache-name.disabled",
+      "type": "java.lang.Boolean",
+      "description": "Flag para desligar o cache por nome",
+      "sourceType": "dev.eltonsandre.sample.infra.cache.configuration.CacheConfigProperties.Config",
+      "defaultValue": false
+    }
+  ]
+}

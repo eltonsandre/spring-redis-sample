@@ -1,0 +1,67 @@
+version: '3.9'
+#senha:
+#  master: master
+#  sentinel: sentinel
+#  entre os sentinel: sentinels
+
+x-redis: &redis_base
+  image: redis:7.0.5
+  restart: on-failure
+  volumes:
+    - redis-data:/data
+
+x-redis-sentinel: &redis_sentinel_base
+  <<: *redis_base
+  depends_on:
+    - redis-master
+  command: >
+    bash -c "echo 'port 6379' > sentinel.conf &&
+    echo 'dir /tmp' >> sentinel.conf &&
+    echo 'sentinel monitor mymaster redis-master 6379 2' >> sentinel.conf &&
+    echo 'sentinel down-after-milliseconds mymaster 5000' >> sentinel.conf &&
+    echo 'sentinel parallel-syncs mymaster 1' >> sentinel.conf &&
+    echo 'sentinel failover-timeout mymaster 5000' >> sentinel.conf &&
+    echo 'sentinel resolve-hostnames yes' >> sentinel.conf &&
+    echo 'sentinel sentinel-pass sentinels' >> sentinel.conf &&
+    echo 'requirepass sentinel' >> sentinel.conf &&
+    echo 'sentinel auth-pass mymaster master' >> sentinel.conf &&
+    echo 'protected-mode no' >> sentinel.conf &&
+    cat sentinel.conf &&
+    redis-sentinel  sentinel.conf --sentinel "
+
+
+services:
+  redis-master:
+    <<: *redis_base
+    container_name: redis-master
+    hostname: redis-master
+    command: redis-server --port 6379 --requirepass master
+    ports:
+      - "6379:6379"
+
+  redis-replica:
+    <<: *redis_base
+    container_name: redis-replica
+    hostname: redis-replica
+    command: redis-server --port 6379 --masterauth master --replicaof redis-master 6379
+    ports:
+      - "6380-6381:6379"
+    depends_on:
+      - redis-master
+
+  redis-sentinel-s1:
+    <<: *redis_sentinel_base
+    container_name: redis-sentinel-s1
+    hostname: redis-sentinel-s1
+    ports:
+      - "26379-26381:6379"
+
+  redis-sentinel-s2:
+    <<: *redis_sentinel_base
+    container_name: redis-sentinel-s2
+    hostname: redis-sentinel-s2
+    ports:
+      - "26382-26384:6379"
+
+volumes:
+  data:

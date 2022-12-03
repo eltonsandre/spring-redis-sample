@@ -1,0 +1,33 @@
+server.port: 8080
+
+logging.level:
+  org.springframework.cache: error
+  org.springframework.data.redis: error
+
+spring:
+  application.name: spring-redis-sample
+
+  cache:
+    type: redis
+    redis:
+      cache-null-values: off
+      enable-statistics: on
+
+  data:
+    redis:
+      ssl.enabled: false
+      timeout: 30s
+      password: master
+      sentinel:
+        master: mymaster
+        password: sentinel
+        nodes:
+          - localhost:26379
+
+
+cache-config:
+  caches:
+    customers:
+      timeToLive: 120s
+    customer:
+      timeToLive: 120s
